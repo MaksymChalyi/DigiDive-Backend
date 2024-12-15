@@ -24,19 +24,29 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // Spring Boot MVC + JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Flyway for database migrations
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
-    implementation 'org.springframework:spring-jdbc'
+
+    // Lombok for reducing boilerplate code
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'org.postgresql:postgresql'
-    runtimeOnly 'org.postgresql:r2dbc-postgresql'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Database driver (PostgreSQL)
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // JWT for authentication
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    testImplementation 'io.projectreactor:reactor-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Spring Boot testing dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Validation API
+    implementation 'jakarta.validation:jakarta.validation-api'
 }
 
 tasks.named('test') {

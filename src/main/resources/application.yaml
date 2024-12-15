@@ -1,20 +1,21 @@
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${POSTGRESQL_DB_NAME}
+    username: ${POSTGRESQL_USERNAME}
+    password: ${POSTGRESQL_PASSWORD}
+    driver-class-name: org.postgresql.Driver
   flyway:
-    enabled: 'true'
+    enabled: true
     locations: classpath:db/migration
     url: jdbc:postgresql://localhost:5432/${POSTGRESQL_DB_NAME}
-    validate-on-migrate: 'true'
     user: ${POSTGRESQL_USERNAME}
     password: ${POSTGRESQL_PASSWORD}
+    validate-on-migrate: true
   jpa:
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  application:
-    name: DigiDive-Backend
-  r2dbc:
-    password: ${POSTGRESQL_PASSWORD}
-    url: ${POSTGRESQL_LINK_REACTIVE}
-    username: ${POSTGRESQL_USERNAME}
 server:
-  port: '8082'
+  port: 8082
