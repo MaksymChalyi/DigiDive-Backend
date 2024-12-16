@@ -26,6 +26,6 @@ public class User {
 
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "role_id", nullable = false) // Правильний зв’язок із таблицею roles
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 }

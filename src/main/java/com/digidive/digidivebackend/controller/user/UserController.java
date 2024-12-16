@@ -3,10 +3,7 @@ package com.digidive.digidivebackend.controller.user;
 import com.digidive.digidivebackend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -29,5 +26,15 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        var user = userService.findUserById(id);
+        return ResponseEntity.ok(user);
+    }
 
+    @GetMapping("/email")
+    public ResponseEntity<?> getUserByEmail(@RequestParam  String email) {
+        var user = userService.findUserByEmail(email);
+        return ResponseEntity.ok(user);
+    }
 }
