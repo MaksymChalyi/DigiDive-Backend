@@ -1,4 +1,4 @@
-package com.digidive.digidivebackend;
+package com.digidive.digidivebackend.exceptions;
 
 public class EmployeeNotFoundException extends RuntimeException {
 

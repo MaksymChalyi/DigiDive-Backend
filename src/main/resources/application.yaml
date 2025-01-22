@@ -17,5 +17,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+jwt:
+  secret: fgbhnilhbgvcyufghh7654swesxdcfvgbhu987654etryo3
+  lifettime: 30m
+
 server:
   port: 8082

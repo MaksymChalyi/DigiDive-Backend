@@ -47,6 +47,10 @@ dependencies {
 
     // Validation API
     implementation 'jakarta.validation:jakarta.validation-api'
+
+    // Spring Security
+    implementation 'org.springframework.security:spring-security-core:6.4.1'
+
 }
 
 tasks.named('test') {
