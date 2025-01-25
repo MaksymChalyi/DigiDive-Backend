@@ -1,14 +1,14 @@
 package com.digidive.digidivebackend.controller.auth;
 
 import com.digidive.digidivebackend.dto.LoginUserDto;
-import com.digidive.digidivebackend.dto.RegisterUserDto;
+import com.digidive.digidivebackend.dto.request.SignUpRequestDto;
+import com.digidive.digidivebackend.dto.response.ApiResponseDto;
 import com.digidive.digidivebackend.dto.response.LoginResponse;
-import com.digidive.digidivebackend.entity.User;
 import com.digidive.digidivebackend.security.jwt.JwtService;
-import com.digidive.digidivebackend.service.AuthenticationService;
+import com.digidive.digidivebackend.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,13 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final JwtService jwtService;
-    private final AuthenticationService authenticationService;
+    private final AuthService authService;
     private final UserDetailsService userDetailsService;
 
     @PostMapping("/signup")
-    public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
-        User registeredUser = authenticationService.signup(registerUserDto);
-        return ResponseEntity.ok(registeredUser);
+    public ResponseEntity<ApiResponseDto<?>> register(@RequestBody @Valid SignUpRequestDto signUpRequestDto) {
+        return authService.signUpUser(signUpRequestDto);
     }
 
     @PostMapping("/login")

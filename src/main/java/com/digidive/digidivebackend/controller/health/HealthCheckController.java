@@ -1,6 +1,7 @@
 package com.digidive.digidivebackend.controller.health;
 
 import com.digidive.digidivebackend.dto.response.ApiResponseDto;
+import com.digidive.digidivebackend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

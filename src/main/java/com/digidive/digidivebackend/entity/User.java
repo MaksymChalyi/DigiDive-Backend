@@ -1,5 +1,6 @@
 package com.digidive.digidivebackend.entity;
 
+import com.digidive.digidivebackend.service.UserService;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,7 +16,7 @@ import java.util.Set;
 @EqualsAndHashCode
 @Builder
 @Entity(name = "users")
-public class User {
+public class User  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,4 +52,6 @@ public class User {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+
 }
