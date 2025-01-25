@@ -19,8 +19,10 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
-  secret: fgbhnilhbgvcyufghh7654swesxdcfvgbhu987654etryo3
-  lifettime: 30m
+  secret: ${JWT_KEY}
+  refresh: ${JWT_REFRESH_KEY}
+  lifetime: 60m
+  refreshLifetime: 43200m
 
 server:
   port: 8082
