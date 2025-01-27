@@ -1,9 +1,9 @@
 package com.digidive.digidivebackend.service.impl;
 
-import com.digidive.digidivebackend.security.jwt.JwtUtils;
 import com.digidive.digidivebackend.dto.request.SignInRequestDto;
 import com.digidive.digidivebackend.dto.request.SignUpRequestDto;
 import com.digidive.digidivebackend.dto.response.ApiResponseDto;
+import com.digidive.digidivebackend.dto.response.SignInResponseDto;
 import com.digidive.digidivebackend.entity.Role;
 import com.digidive.digidivebackend.entity.RoleFactory;
 import com.digidive.digidivebackend.entity.User;
@@ -11,6 +11,7 @@ import com.digidive.digidivebackend.exceptions.PasswordMismatchException;
 import com.digidive.digidivebackend.exceptions.RoleNotFoundException;
 import com.digidive.digidivebackend.exceptions.UserAlreadyExistsException;
 import com.digidive.digidivebackend.repository.UserRepository;
+import com.digidive.digidivebackend.security.jwt.JwtUtils;
 import com.digidive.digidivebackend.service.AuthService;
 import com.digidive.digidivebackend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final RoleFactory roleFactory;
     private final JwtUtils jwtUtils;
+    private final UserDetailsService userDetailsService;
 
     @Override
     public ResponseEntity<ApiResponseDto<?>> signUpUser(SignUpRequestDto signUpRequestDto) throws UserAlreadyExistsException, RoleNotFoundException {
@@ -50,20 +52,11 @@ public class AuthServiceImpl implements AuthService {
 
         User user = createUser(signUpRequestDto);
         userService.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                ApiResponseDto.builder()
-                        .isSuccess(true)
-                        .message("User account has been successfully created!")
-                        .build()
-        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.builder().isSuccess(true).message("User account has been successfully created!").build());
     }
 
     private User createUser(SignUpRequestDto signUpRequestDto) throws RoleNotFoundException {
-        return User.builder()
-                .email(signUpRequestDto.email())
-                .password(passwordEncoder.encode(signUpRequestDto.password()))
-                .roles(determineRoles(signUpRequestDto.roles()))
-                .build();
+        return User.builder().email(signUpRequestDto.email()).password(passwordEncoder.encode(signUpRequestDto.password())).roles(determineRoles(signUpRequestDto.roles())).build();
     }
 
     private Set<Role> determineRoles(Set<String> strRoles) throws RoleNotFoundException {
@@ -82,31 +75,43 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<ApiResponseDto<?>> signInUser(SignInRequestDto signInRequestDto) {
+        Authentication authentication = authenticateUser(signInRequestDto);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+        SignInResponseDto responseDto = buildSignInResponse(authentication, jwt);
 
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequestDto.email(), signInRequestDto.password()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        String jwt = jwtUtils.generateJwtToken(authentication);
-        UserDetailsServiceImpl userDetailsService = (UserDetailsServiceImpl) authentication.getPrincipal();
+        return ResponseEntity.ok(buildSuccessResponse(responseDto));
+    }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(signInRequestDto.email());
+    private Authentication authenticateUser(SignInRequestDto signInRequestDto) {
+        return authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        signInRequestDto.email(),
+                        signInRequestDto.password()
+                )
+        );
+    }
 
-        List<String> roles = userDetails.getAuthorities().stream()
+    private SignInResponseDto buildSignInResponse(Authentication authentication, String jwt) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities()
+                .stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-/*        SignInResponseDto signInResponseDto = SignInResponseDto.builder()
+        return SignInResponseDto.builder()
                 .email(userDetails.getUsername())
-                .token(jw)
+                .token(jwt)
+                .type("Bearer")
+                .roles(roles)
                 .build();
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        input.email(),
-                        input.password()
-                )
-        );
-        return userRepository.findByEmail(input.email())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-    */
-        return null;
     }
+
+    private ApiResponseDto<SignInResponseDto> buildSuccessResponse(SignInResponseDto responseDto) {
+        return ApiResponseDto.<SignInResponseDto>builder()
+                .isSuccess(true)
+                .message("Sign in successful!")
+                .response(responseDto)
+                .build();
+    }
+
 }

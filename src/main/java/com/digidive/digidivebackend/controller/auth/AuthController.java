@@ -1,5 +1,6 @@
 package com.digidive.digidivebackend.controller.auth;
 
+import com.digidive.digidivebackend.dto.request.SignInRequestDto;
 import com.digidive.digidivebackend.dto.request.SignUpRequestDto;
 import com.digidive.digidivebackend.dto.response.ApiResponseDto;
 import com.digidive.digidivebackend.security.jwt.JwtUtils;
@@ -27,13 +28,10 @@ public class AuthController {
         return authService.signUpUser(signUpRequestDto);
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
-//        String jwtToken = jwtUtils.generateJwtToken(userDetailsService.loadUserByUsername(loginUserDto.email()));
-//
-//        LoginResponse loginResponse = new LoginResponse(jwtToken, jwtUtils.getJwtLifetime().toMillis());
-//        return ResponseEntity.ok(loginResponse);
-//    }
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponseDto<?>> authenticate(@RequestBody @Valid SignInRequestDto signInRequestDto) {
+        return authService.signInUser(signInRequestDto);
+    }
 
 
 }
