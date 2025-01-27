@@ -1,6 +1,7 @@
 package com.digidive.digidivebackend.service.impl;
 
-import com.digidive.digidivebackend.dto.LoginUserDto;
+import com.digidive.digidivebackend.security.jwt.JwtUtils;
+import com.digidive.digidivebackend.dto.request.SignInRequestDto;
 import com.digidive.digidivebackend.dto.request.SignUpRequestDto;
 import com.digidive.digidivebackend.dto.response.ApiResponseDto;
 import com.digidive.digidivebackend.entity.Role;
@@ -17,11 +18,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -32,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RoleFactory roleFactory;
+    private final JwtUtils jwtUtils;
 
     @Override
     public ResponseEntity<ApiResponseDto<?>> signUpUser(SignUpRequestDto signUpRequestDto) throws UserAlreadyExistsException, RoleNotFoundException {
@@ -75,7 +81,23 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public User authenticate(LoginUserDto input) {
+    public ResponseEntity<ApiResponseDto<?>> signInUser(SignInRequestDto signInRequestDto) {
+
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequestDto.email(), signInRequestDto.password()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        String jwt = jwtUtils.generateJwtToken(authentication);
+        UserDetailsServiceImpl userDetailsService = (UserDetailsServiceImpl) authentication.getPrincipal();
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(signInRequestDto.email());
+
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+/*        SignInResponseDto signInResponseDto = SignInResponseDto.builder()
+                .email(userDetails.getUsername())
+                .token(jw)
+                .build();
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         input.email(),
@@ -84,5 +106,7 @@ public class AuthServiceImpl implements AuthService {
         );
         return userRepository.findByEmail(input.email())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+    */
+        return null;
     }
 }

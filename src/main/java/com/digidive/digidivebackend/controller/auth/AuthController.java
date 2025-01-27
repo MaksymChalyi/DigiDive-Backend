@@ -1,10 +1,8 @@
 package com.digidive.digidivebackend.controller.auth;
 
-import com.digidive.digidivebackend.dto.LoginUserDto;
 import com.digidive.digidivebackend.dto.request.SignUpRequestDto;
 import com.digidive.digidivebackend.dto.response.ApiResponseDto;
-import com.digidive.digidivebackend.dto.response.LoginResponse;
-import com.digidive.digidivebackend.security.jwt.JwtService;
+import com.digidive.digidivebackend.security.jwt.JwtUtils;
 import com.digidive.digidivebackend.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final JwtService jwtService;
+    private final JwtUtils jwtUtils;
     private final AuthService authService;
     private final UserDetailsService userDetailsService;
 
@@ -29,13 +27,13 @@ public class AuthController {
         return authService.signUpUser(signUpRequestDto);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
-        String jwtToken = jwtService.generateToken(userDetailsService.loadUserByUsername(loginUserDto.email()));
-
-        LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getJwtLifetime().toMillis());
-        return ResponseEntity.ok(loginResponse);
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
+//        String jwtToken = jwtUtils.generateJwtToken(userDetailsService.loadUserByUsername(loginUserDto.email()));
+//
+//        LoginResponse loginResponse = new LoginResponse(jwtToken, jwtUtils.getJwtLifetime().toMillis());
+//        return ResponseEntity.ok(loginResponse);
+//    }
 
 
 }
