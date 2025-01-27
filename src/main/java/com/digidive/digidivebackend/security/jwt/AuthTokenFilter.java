@@ -2,7 +2,6 @@ package com.digidive.digidivebackend.security;
 
 
 import com.digidive.digidivebackend.security.jwt.JwtUtils;
-import com.digidive.digidivebackend.service.impl.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
